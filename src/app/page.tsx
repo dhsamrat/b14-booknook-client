@@ -1,3 +1,4 @@
+import ReadingHabit from "@/components/ReadingHabit";
 import WhyChooseBookNook from "@/components/WhyChooseBookNook";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
       {/* Featured Books */}
 
       <WhyChooseBookNook />
+      <ReadingHabit />
 
       {/* Other Sections */}
       
