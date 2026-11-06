@@ -1,3 +1,4 @@
+import Banner from "@/components/Banner";
 import ReadingHabit from "@/components/ReadingHabit";
 import WhyChooseBookNook from "@/components/WhyChooseBookNook";
 
@@ -6,6 +7,7 @@ export default function Home() {
     <div>
       <main>
       {/* Hero Section */}
+      <Banner />
 
       {/* Featured Books */}
 
