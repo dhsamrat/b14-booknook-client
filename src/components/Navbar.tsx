@@ -21,7 +21,7 @@ export default function Navbar() {
         <Link
           href="/"
           onClick={closeMenu}
-          className="text-2xl font-bold text-gray-900"
+          className="text-3xl font-extrabold tracking-tight text-emerald-700"
         >
           Book<span className="text-blue-600">Nook</span>
         </Link>
@@ -32,7 +32,7 @@ export default function Navbar() {
             Home
           </Link>
 
-          <Link href="/books" className="text-gray-700 hover:text-blue-600">
+          <Link href="/all-books" className="text-gray-700 hover:text-blue-600">
             All Books
           </Link>
 
