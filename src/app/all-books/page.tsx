@@ -94,7 +94,7 @@ export default function AllBookPage() {
         )}
 
         {/* Empty State */}
-        {books.length === 0 ? (
+        {!error && books.length === 0 ? (
           <div className="rounded-xl border border-gray-200 bg-white px-5 py-12 text-center shadow-sm sm:px-8 sm:py-16">
             <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 text-3xl">
               📚
@@ -109,93 +109,95 @@ export default function AllBookPage() {
             </p>
           </div>
         ) : (
-          <>
-            {/* Book Count */}
-            <div className="mb-5 flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-600 sm:text-base">
-                Total Books:{" "}
-                <span className="font-bold text-gray-900">
-                  {books.length}
-                </span>
-              </p>
-            </div>
+          !error && (
+            <>
+              {/* Book Count */}
+              <div className="mb-5 flex items-center justify-between">
+                <p className="text-sm font-medium text-gray-600 sm:text-base">
+                  Total Books:{" "}
+                  <span className="font-bold text-gray-900">
+                    {books.length}
+                  </span>
+                </p>
+              </div>
 
-            {/* Books Grid */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:gap-7">
-              {books.map((book) => (
-                <div
-                  key={book._id}
-                  className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
-                >
-                 {/* Book Image */}
-<div className="relative h-52 overflow-hidden bg-gray-100 sm:h-56">
-  <Image
-    src={book.image}
-    alt={book.title}
-    width={400}
-    height={300}
-    className="h-full w-full object-cover transition duration-300 hover:scale-105"
-  />
-</div>
+              {/* Books Grid */}
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:gap-7">
+                {books.map((book) => (
+                  <div
+                    key={book._id}
+                    className="flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                  >
+                    {/* Book Image */}
+                    <div className="relative h-52 overflow-hidden bg-gray-100 sm:h-56">
+                      <Image
+                        src={book.image}
+                        alt={book.title}
+                        width={400}
+                        height={300}
+                        className="h-full w-full object-cover transition duration-300 hover:scale-105"
+                      />
+                    </div>
 
-                  {/* Book Information */}
-                  <div className="flex flex-1 flex-col p-4 sm:p-5">
-                    <div>
-                      <span className="inline-block rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
-                        {book.category}
-                      </span>
+                    {/* Book Information */}
+                    <div className="flex flex-1 flex-col p-4 sm:p-5">
+                      <div>
+                        <span className="inline-block rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
+                          {book.category}
+                        </span>
 
-                      <h2 className="mt-3 break-words text-lg font-bold leading-snug text-gray-900 sm:text-xl">
-                        {book.title}
-                      </h2>
+                        <h2 className="mt-3 break-words text-lg font-bold leading-snug text-gray-900 sm:text-xl">
+                          {book.title}
+                        </h2>
 
-                      <p className="mt-1 text-sm text-gray-600">
-                        By {book.author}
-                      </p>
+                        <p className="mt-1 text-sm text-gray-600">
+                          By {book.author}
+                        </p>
 
-                      {/* Book Copies */}
-                      <div className="mt-4 space-y-2 rounded-lg bg-gray-50 p-3">
-                        <div className="flex items-center justify-between gap-3 text-sm">
-                          <span className="text-gray-600">
-                            Total Copies
-                          </span>
+                        {/* Book Copies */}
+                        <div className="mt-4 space-y-2 rounded-lg bg-gray-50 p-3">
+                          <div className="flex items-center justify-between gap-3 text-sm">
+                            <span className="text-gray-600">
+                              Total Copies
+                            </span>
 
-                          <span className="font-semibold text-gray-900">
-                            {book.totalCopies}
-                          </span>
+                            <span className="font-semibold text-gray-900">
+                              {book.totalCopies}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-3 text-sm">
+                            <span className="text-gray-600">
+                              Available Copies
+                            </span>
+
+                            <span className="font-semibold text-green-700">
+                              {book.availableCopies}
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="flex items-center justify-between gap-3 text-sm">
-                          <span className="text-gray-600">
-                            Available Copies
-                          </span>
-
-                          <span className="font-semibold text-green-700">
-                            {book.availableCopies}
-                          </span>
-                        </div>
+                        {/* Description */}
+                        <p className="mt-4 line-clamp-3 text-sm leading-6 text-gray-600">
+                          {book.description}
+                        </p>
                       </div>
 
-                      {/* Description */}
-                      <p className="mt-4 line-clamp-3 text-sm leading-6 text-gray-600">
-                        {book.description}
-                      </p>
-                    </div>
-
-                    {/* Details Button */}
-                    <div className="mt-auto pt-5">
-                      <Link
-                        href={`/books/${book._id}`}
-                        className="block w-full rounded-lg bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-gray-700"
-                      >
-                        View Details
-                      </Link>
+                      {/* Details Button */}
+                      <div className="mt-auto pt-5">
+                        <Link
+                          href={`/all-books/${book._id}`}
+                          className="block w-full rounded-lg bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-gray-700"
+                        >
+                          View Details
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </>
+                ))}
+              </div>
+            </>
+          )
         )}
       </div>
     </main>
