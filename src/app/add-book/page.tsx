@@ -22,9 +22,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { BookPlus, BookOpen, CheckCircle2, Loader2 } from "lucide-react";
+import {
+  BookPlus,
+  BookOpen,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 
-type BookCategory = "Fiction" | "Science" | "History" | "Kids" | "Others";
+type BookCategory =
+  | "Fiction"
+  | "Science"
+  | "History"
+  | "Kids"
+  | "Others";
 
 export default function AddBookPage() {
   const [loading, setLoading] = useState(false);
@@ -52,74 +62,80 @@ export default function AddBookPage() {
     setSuccess("");
   };
 
-  
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  setError("");
-  setSuccess("");
+    setError("");
+    setSuccess("");
 
-  const totalCopies = Number(formData.totalCopies);
+    const totalCopies = Number(formData.totalCopies);
 
-  if (!Number.isInteger(totalCopies) || totalCopies < 1) {
-    setError("Total copies must be a positive whole number.");
-    return;
-  }
-
-  if (
-    !formData.title.trim() ||
-    !formData.author.trim() ||
-    !formData.image.trim() ||
-    !formData.description.trim()
-  ) {
-    setError("Please fill in all required fields.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const res = await fetch("http://localhost:5000/add-book", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: formData.title.trim(),
-        author: formData.author.trim(),
-        category: formData.category,
-        image: formData.image.trim(),
-        description: formData.description.trim(),
-        totalCopies,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to add book.");
+    if (!Number.isInteger(totalCopies) || totalCopies < 1) {
+      setError("Total copies must be a positive whole number.");
+      return;
     }
 
-    setSuccess("Book added successfully!");
+    if (
+      !formData.title.trim() ||
+      !formData.author.trim() ||
+      !formData.image.trim() ||
+      !formData.description.trim()
+    ) {
+      setError("Please fill in all required fields.");
+      return;
+    }
 
-    setFormData({
-      title: "",
-      author: "",
-      category: "Fiction",
-      image: "",
-      description: "",
-      totalCopies: "1",
-    });
+    const bookData = {
+      title: formData.title.trim(),
+      author: formData.author.trim(),
+      category: formData.category,
+      image: formData.image.trim(),
+      description: formData.description.trim(),
+      totalCopies,
 
-  } catch (err) {
-    setError(
-      err instanceof Error ? err.message : "Something went wrong."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      // Borrow functionality এখনো তৈরি হয়নি
+      // তাই সব কপি available থাকবে
+      availableCopies: totalCopies,
+    };
 
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:5000/add-book", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to add book.");
+      }
+
+      setSuccess("Book added successfully!");
+
+      setFormData({
+        title: "",
+        author: "",
+        category: "Fiction",
+        image: "",
+        description: "",
+        totalCopies: "1",
+      });
+
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#faf9f6] px-4 py-10 sm:px-6 sm:py-14">
@@ -146,8 +162,10 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
         {/* Form Card */}
         <Card className="overflow-hidden rounded-2xl border-gray-200 bg-white shadow-sm">
+
           <CardHeader className="border-b border-gray-100 bg-gray-50/70 px-5 py-5 sm:px-8">
             <div className="flex items-center gap-3">
+
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                 <BookOpen className="h-5 w-5" />
               </div>
@@ -156,20 +174,25 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 <CardTitle className="text-lg font-bold text-gray-900">
                   Book Information
                 </CardTitle>
+
                 <CardDescription className="mt-1 text-sm">
                   Fill in the details below to add a book.
                 </CardDescription>
               </div>
+
             </div>
           </CardHeader>
 
           <CardContent className="p-5 sm:p-8">
+
             <form onSubmit={handleSubmit} className="space-y-6">
 
               {/* Title and Author */}
               <div className="grid gap-5 sm:grid-cols-2">
+
                 <div className="space-y-2">
                   <Label htmlFor="title">Book Title *</Label>
+
                   <Input
                     id="title"
                     name="title"
@@ -183,6 +206,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
                 <div className="space-y-2">
                   <Label htmlFor="author">Author Name *</Label>
+
                   <Input
                     id="author"
                     name="author"
@@ -193,21 +217,26 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                     className="h-11"
                   />
                 </div>
+
               </div>
 
               {/* Category and Copies */}
               <div className="grid gap-5 sm:grid-cols-2">
+
                 <div className="space-y-2">
                   <Label htmlFor="category">Book Category *</Label>
 
                   <Select
                     value={formData.category}
-                    onValueChange={(value) =>
+                    onValueChange={(value) => {
                       setFormData((prev) => ({
                         ...prev,
                         category: value as BookCategory,
-                      }))
-                    }
+                      }));
+
+                      setError("");
+                      setSuccess("");
+                    }}
                   >
                     <SelectTrigger id="category" className="h-11 w-full">
                       <SelectValue placeholder="Select category" />
@@ -225,6 +254,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
                 <div className="space-y-2">
                   <Label htmlFor="totalCopies">Total Copies *</Label>
+
                   <Input
                     id="totalCopies"
                     type="number"
@@ -236,15 +266,18 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                     required
                     className="h-11"
                   />
+
                   <p className="text-xs text-gray-500">
-                    Enter the number of available copies.
+                    All copies will be available until borrowing is implemented.
                   </p>
                 </div>
+
               </div>
 
               {/* Image URL */}
               <div className="space-y-2">
                 <Label htmlFor="image">Book Cover Image URL *</Label>
+
                 <Input
                   id="image"
                   type="url"
@@ -255,6 +288,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                   required
                   className="h-11"
                 />
+
                 <p className="text-xs text-gray-500">
                   Paste a valid image URL for the book cover.
                 </p>
@@ -263,6 +297,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
               {/* Description */}
               <div className="space-y-2">
                 <Label htmlFor="description">Book Description *</Label>
+
                 <Textarea
                   id="description"
                   name="description"
@@ -292,6 +327,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
               {/* Submit Button */}
               <div className="border-t border-gray-100 pt-5">
+
                 <Button
                   type="submit"
                   disabled={loading}
@@ -310,17 +346,17 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                   )}
                 </Button>
 
-                <p className="mt-3 text-center text-xs text-gray-500">
-                  Backend integration will be available soon.
-                </p>
               </div>
+
             </form>
+
           </CardContent>
         </Card>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Every book you add helps someone discover a new story.
         </p>
+
       </div>
     </main>
   );

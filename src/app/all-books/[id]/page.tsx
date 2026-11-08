@@ -1,6 +1,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import EditDetailsDialog from "@/components/EditDetailsDialog";
+
 import {
   ArrowLeft,
   BookOpen,
@@ -20,7 +22,7 @@ type Book = {
   image: string;
   description: string;
   totalCopies: number;
-  availableCopies: number;
+  availableCopies?: number | null;
   addedBy?: {
     name: string;
   };
@@ -32,7 +34,9 @@ type BookDetailsPageProps = {
   }>;
 };
 
-const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
+const BookDetailsPage = async ({
+  params,
+}: BookDetailsPageProps) => {
   const { id } = await params;
 
   let book: Book | null = null;
@@ -47,10 +51,15 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
     );
 
     if (!res.ok) {
-      throw new Error("Unable to load book details.");
+      throw new Error(
+        res.status === 404
+          ? "This book does not exist in our collection."
+          : "Unable to load book details."
+      );
     }
 
     book = await res.json();
+
   } catch (err) {
     error =
       err instanceof Error
@@ -62,6 +71,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#faf9f6] px-5">
         <div className="max-w-md rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-sm">
+
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 text-3xl">
             📚
           </div>
@@ -81,12 +91,37 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
             <ArrowLeft size={17} />
             Back to All Books
           </Link>
+
         </div>
       </main>
     );
   }
 
-  const isAvailable = book.availableCopies > 0;
+  // Normalize copies data
+  const parsedTotalCopies = Number(book.totalCopies);
+
+  const totalCopies = Number.isFinite(parsedTotalCopies)
+    ? parsedTotalCopies
+    : 0;
+
+  const parsedAvailableCopies = Number(book.availableCopies);
+
+  const availableCopies =
+    book.availableCopies === undefined ||
+    book.availableCopies === null ||
+    !Number.isFinite(parsedAvailableCopies)
+      ? totalCopies
+      : parsedAvailableCopies;
+
+  // Availability status
+  const isAvailable = availableCopies > 0;
+
+  // Normalized book data for Edit Dialog
+  const normalizedBook: Book = {
+    ...book,
+    totalCopies,
+    availableCopies,
+  };
 
   return (
     <main className="min-h-screen bg-[#faf9f6] px-4 py-8 sm:px-6 sm:py-12">
@@ -95,6 +130,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
 
         {/* Breadcrumb */}
         <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+
           <Link
             href="/"
             className="transition hover:text-amber-700"
@@ -116,6 +152,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
           <span className="font-medium text-gray-900">
             Book Details
           </span>
+
         </div>
 
         {/* Main Book Details */}
@@ -132,6 +169,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
               </div>
 
               <div className="relative z-10 w-full max-w-[310px] transition duration-500 hover:-translate-y-2 hover:rotate-1">
+
                 <div className="absolute -right-3 top-3 h-full w-full rounded-r-xl bg-[#c8bba6] shadow-lg" />
 
                 <div className="relative overflow-hidden rounded-md shadow-2xl">
@@ -144,18 +182,28 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                     className="aspect-[3/4] w-full object-cover"
                   />
                 </div>
+
               </div>
 
               <div className="absolute bottom-7 left-0 right-0 text-center text-xs font-medium tracking-[0.2em] text-gray-500">
                 DISCOVER · READ · GROW
               </div>
+
             </div>
 
             {/* Right: Book Information */}
             <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-14">
 
+              {/* Edit Button */}
+              <div className="mb-4 flex justify-end">
+                <div className="w-full sm:w-auto sm:min-w-[220px]">
+                  <EditDetailsDialog book={normalizedBook} />
+                </div>
+              </div>
+
               {/* Category and Availability */}
               <div className="flex flex-wrap items-center gap-3">
+
                 <span className="rounded-full bg-amber-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-amber-800">
                   {book.category}
                 </span>
@@ -171,6 +219,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                     Out of Stock
                   </span>
                 )}
+
               </div>
 
               {/* Title */}
@@ -180,6 +229,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
 
               {/* Author */}
               <div className="mt-5 flex items-center gap-3">
+
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-50 text-amber-700">
                   <UserRound size={21} />
                 </div>
@@ -193,6 +243,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                     {book.author}
                   </p>
                 </div>
+
               </div>
 
               {/* Divider */}
@@ -200,6 +251,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
 
               {/* Description */}
               <div>
+
                 <div className="flex items-center gap-2">
                   <BookOpen size={19} className="text-amber-700" />
 
@@ -211,12 +263,14 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                 <p className="mt-4 text-sm leading-8 text-gray-600 sm:text-base">
                   {book.description}
                 </p>
+
               </div>
 
               {/* Book Statistics */}
               <div className="mt-9 grid grid-cols-2 gap-4">
 
                 <div className="rounded-2xl border border-gray-100 bg-[#faf9f6] p-4 sm:p-5">
+
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-800">
                     <Library size={20} />
                   </div>
@@ -226,11 +280,13 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                   </p>
 
                   <p className="mt-1 text-2xl font-extrabold text-gray-900">
-                    {book.totalCopies}
+                    {totalCopies}
                   </p>
+
                 </div>
 
                 <div className="rounded-2xl border border-gray-100 bg-[#faf9f6] p-4 sm:p-5">
+
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-700">
                     <Bookmark size={20} />
                   </div>
@@ -240,14 +296,16 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                   </p>
 
                   <p className="mt-1 text-2xl font-extrabold text-gray-900">
-                    {book.availableCopies}
+                    {availableCopies}
                   </p>
+
                 </div>
 
               </div>
 
               {/* Borrow Button */}
               <div className="mt-8">
+
                 {isAvailable ? (
                   <Link
                     href={`/all-books/${book._id}/borrow`}
@@ -265,6 +323,7 @@ const BookDetailsPage = async ({ params }: BookDetailsPageProps) => {
                     Currently Unavailable
                   </button>
                 )}
+
               </div>
 
               {/* Added By */}

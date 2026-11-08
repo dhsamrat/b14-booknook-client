@@ -11,6 +11,10 @@ export default function Home() {
       {/* Hero Section */}
       <Banner />
 
+      {/* All Books
+
+      <all-books /> */}
+
       {/* Featured Books */}
 
       <WhyChooseBookNook />
