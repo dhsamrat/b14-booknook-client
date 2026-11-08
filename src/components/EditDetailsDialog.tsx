@@ -167,12 +167,12 @@ const EditDetailsDialog = ({ book }: Props) => {
     >
       {/* Edit Button */}
       <DialogTrigger
-        type="button"
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-6 py-3.5 text-sm font-bold text-amber-800 transition hover:bg-amber-100"
-      >
-        <Pencil size={18} />
-        Edit Book Details
-      </DialogTrigger>
+  type="button"
+  className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-6 py-3.5 text-sm font-bold text-amber-800 transition hover:bg-amber-100"
+>
+  <Pencil size={10} />
+  Edit Book Details
+</DialogTrigger>
 
       {/* Edit Dialog */}
       <DialogContent className="max-h-[90vh] overflow-y-auto bg-[#faf9f6] sm:max-w-2xl">

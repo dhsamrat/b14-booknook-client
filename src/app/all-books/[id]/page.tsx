@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import EditDetailsDialog from "@/components/EditDetailsDialog";
+import DeleteBookButton from "@/components/DeleteBookButton";
 
 import {
   ArrowLeft,
@@ -59,7 +60,6 @@ const BookDetailsPage = async ({
     }
 
     book = await res.json();
-
   } catch (err) {
     error =
       err instanceof Error
@@ -67,6 +67,7 @@ const BookDetailsPage = async ({
         : "Something went wrong.";
   }
 
+  // Book Not Found
   if (!book || error) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#faf9f6] px-5">
@@ -97,7 +98,7 @@ const BookDetailsPage = async ({
     );
   }
 
-  // Normalize copies data
+  // Normalize Copies Data
   const parsedTotalCopies = Number(book.totalCopies);
 
   const totalCopies = Number.isFinite(parsedTotalCopies)
@@ -113,10 +114,10 @@ const BookDetailsPage = async ({
       ? totalCopies
       : parsedAvailableCopies;
 
-  // Availability status
+  // Availability Status
   const isAvailable = availableCopies > 0;
 
-  // Normalized book data for Edit Dialog
+  // Normalized Book Data
   const normalizedBook: Book = {
     ...book,
     totalCopies,
@@ -194,11 +195,15 @@ const BookDetailsPage = async ({
             {/* Right: Book Information */}
             <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-14">
 
-              {/* Edit Button */}
-              <div className="mb-4 flex justify-end">
-                <div className="w-full sm:w-auto sm:min-w-[220px]">
-                  <EditDetailsDialog book={normalizedBook} />
-                </div>
+              {/* Edit and Delete Buttons */}
+              <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                <EditDetailsDialog book={normalizedBook} />
+
+                <DeleteBookButton
+                  bookId={normalizedBook._id.toString()}
+                />
+
               </div>
 
               {/* Category and Availability */}
@@ -246,7 +251,6 @@ const BookDetailsPage = async ({
 
               </div>
 
-              {/* Divider */}
               <div className="my-8 border-t border-gray-100" />
 
               {/* Description */}
