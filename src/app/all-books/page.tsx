@@ -194,7 +194,7 @@ export default function AllBookPage() {
                             {book.category}
                           </span>
 
-                          <h2 className="mt-3 break-words text-lg font-bold leading-snug text-gray-900 sm:text-xl">
+                          <h2 className="mt-3 wrap-break-word text-lg font-bold leading-snug text-gray-900 sm:text-xl">
                             {book.title}
                           </h2>
 

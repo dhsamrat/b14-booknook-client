@@ -34,7 +34,7 @@ export default function ReadingHabit() {
   alt="Books and reading"
   width={1000}
   height={700}
-  className="h-56 w-full object-cover sm:h-72 md:h-[350px]"
+  className="h-56 w-full object-cover sm:h-72 md:h-350px"
 />
 </div>
       </div>

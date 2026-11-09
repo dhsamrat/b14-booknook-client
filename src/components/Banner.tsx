@@ -84,7 +84,7 @@ const Banner = () => {
           {slides.map((slide, index) => (
             <CarouselItem key={index} className="pl-0">
               <div
-                className="relative flex min-h-[380px] items-center justify-center bg-cover bg-center px-5 py-12 text-center sm:min-h-[440px] sm:px-8 md:min-h-[560px] md:justify-start md:px-16 md:text-left"
+                className="relative flex min-h-380px items-center justify-center bg-cover bg-center px-5 py-12 text-center sm:min-h-440px sm:px-8 md:min-h-560px md:justify-start md:px-16 md:text-left"
                 style={{
                   backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.82), rgba(0,0,0,0.25)), url('${slide.image}')`,
                 }}

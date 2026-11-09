@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import EditDetailsDialog from "@/components/EditDetailsDialog";
-import DeleteBookButton from "@/components/DeleteBookButton";
+import DeleteBookButton from "../../../components/DeleteBookButton";
 
 import {
   ArrowLeft,
@@ -162,14 +162,14 @@ const BookDetailsPage = async ({
           <div className="grid md:grid-cols-2">
 
             {/* Left: Book Cover */}
-            <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#eee9df] via-[#f7f3eb] to-[#e8dfd0] p-8 sm:p-12 md:min-h-[650px]">
+            <div className="relative flex min-h-420px items-center justify-center overflow-hidden bg-linear-to-br from-[#eee9df] via-[#f7f3eb] to-[#e8dfd0] p-8 sm:p-12 md:min-h-650px">
 
               <div className="absolute left-8 top-8 flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm backdrop-blur">
                 <Sparkles size={14} className="text-amber-600" />
                 BookNook Collection
               </div>
 
-              <div className="relative z-10 w-full max-w-[310px] transition duration-500 hover:-translate-y-2 hover:rotate-1">
+              <div className="relative z-10 w-full max-w-310px transition duration-500 hover:-translate-y-2 hover:rotate-1">
 
                 <div className="absolute -right-3 top-3 h-full w-full rounded-r-xl bg-[#c8bba6] shadow-lg" />
 
@@ -180,7 +180,7 @@ const BookDetailsPage = async ({
                     width={500}
                     height={700}
                     priority
-                    className="aspect-[3/4] w-full object-cover"
+                    className="aspect-3/4 w-full object-cover"
                   />
                 </div>
 

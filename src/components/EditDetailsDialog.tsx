@@ -29,7 +29,7 @@ type Book = {
   image: string;
   description: string;
   totalCopies: number;
-  availableCopies: number;
+availableCopies?: number | null;
 };
 
 type Props = {

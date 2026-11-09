@@ -58,7 +58,7 @@ const FeaturedAuthors = () => {
           >
             {/* Author Image */}
             <div
-              className={`relative mx-auto h-28 w-28 overflow-hidden rounded-full bg-gradient-to-br ${author.color} ring-4 ring-white shadow-md`}
+              className={`relative mx-auto h-28 w-28 overflow-hidden rounded-full bg-linear-to-br ${author.color} ring-4 ring-white shadow-md`}
             >
               <Image
                 src={author.image}
