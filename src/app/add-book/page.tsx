@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
+
 import {
   Select,
   SelectContent,
@@ -37,6 +39,8 @@ type BookCategory =
   | "Others";
 
 export default function AddBookPage() {
+  const { data: session, isPending } = authClient.useSession();
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -68,6 +72,16 @@ export default function AddBookPage() {
     setError("");
     setSuccess("");
 
+    if (isPending) {
+      setError("Please wait. Checking your login status...");
+      return;
+    }
+
+    if (!session?.user?.email) {
+      setError("Please login before adding a book.");
+      return;
+    }
+
     const totalCopies = Number(formData.totalCopies);
 
     if (!Number.isInteger(totalCopies) || totalCopies < 1) {
@@ -92,16 +106,21 @@ export default function AddBookPage() {
       image: formData.image.trim(),
       description: formData.description.trim(),
       totalCopies,
-
-      // Borrow functionality এখনো তৈরি হয়নি
-      // তাই সব কপি available থাকবে
       availableCopies: totalCopies,
+
+      addedBy: {
+        name: session.user.name || "",
+        email: session.user.email,
+      },
     };
 
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/add-book", {
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+      const res = await fetch(`${API_URL}/add-book`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +144,6 @@ export default function AddBookPage() {
         description: "",
         totalCopies: "1",
       });
-
     } catch (err) {
       setError(
         err instanceof Error
@@ -162,10 +180,8 @@ export default function AddBookPage() {
 
         {/* Form Card */}
         <Card className="overflow-hidden rounded-2xl border-gray-200 bg-white shadow-sm">
-
           <CardHeader className="border-b border-gray-100 bg-gray-50/70 px-5 py-5 sm:px-8">
             <div className="flex items-center gap-3">
-
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
                 <BookOpen className="h-5 w-5" />
               </div>
@@ -179,17 +195,14 @@ export default function AddBookPage() {
                   Fill in the details below to add a book.
                 </CardDescription>
               </div>
-
             </div>
           </CardHeader>
 
           <CardContent className="p-5 sm:p-8">
-
             <form onSubmit={handleSubmit} className="space-y-6">
 
               {/* Title and Author */}
               <div className="grid gap-5 sm:grid-cols-2">
-
                 <div className="space-y-2">
                   <Label htmlFor="title">Book Title *</Label>
 
@@ -217,12 +230,10 @@ export default function AddBookPage() {
                     className="h-11"
                   />
                 </div>
-
               </div>
 
               {/* Category and Copies */}
               <div className="grid gap-5 sm:grid-cols-2">
-
                 <div className="space-y-2">
                   <Label htmlFor="category">Book Category *</Label>
 
@@ -268,10 +279,9 @@ export default function AddBookPage() {
                   />
 
                   <p className="text-xs text-gray-500">
-                    All copies will be available until borrowing is implemented.
+                    All copies will initially be available.
                   </p>
                 </div>
-
               </div>
 
               {/* Image URL */}
@@ -327,10 +337,9 @@ export default function AddBookPage() {
 
               {/* Submit Button */}
               <div className="border-t border-gray-100 pt-5">
-
                 <Button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || isPending}
                   className="h-12 w-full rounded-xl bg-emerald-700 text-sm font-semibold text-white hover:bg-emerald-800 sm:text-base"
                 >
                   {loading ? (
@@ -345,11 +354,9 @@ export default function AddBookPage() {
                     </>
                   )}
                 </Button>
-
               </div>
 
             </form>
-
           </CardContent>
         </Card>
 

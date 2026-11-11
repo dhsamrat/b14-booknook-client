@@ -21,6 +21,9 @@ import {
 import { Pencil } from "lucide-react";
 import { toast } from "react-toastify";
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 type Book = {
   _id: string;
   title: string;
@@ -29,11 +32,12 @@ type Book = {
   image: string;
   description: string;
   totalCopies: number;
-availableCopies?: number | null;
+  availableCopies?: number | null;
 };
 
 type Props = {
   book: Book;
+  onUpdated?: (updatedBook: Partial<Book>) => void;
 };
 
 const categories = [
@@ -44,7 +48,7 @@ const categories = [
   "Others",
 ];
 
-const EditDetailsDialog = ({ book }: Props) => {
+const EditDetailsDialog = ({ book, onUpdated }: Props) => {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
@@ -54,8 +58,8 @@ const EditDetailsDialog = ({ book }: Props) => {
     title: book.title,
     author: book.author,
     category: book.category,
-    image: book.image,
-    description: book.description,
+    image: book.image || "",
+    description: book.description || "",
     totalCopies: String(book.totalCopies),
   });
 
@@ -68,8 +72,8 @@ const EditDetailsDialog = ({ book }: Props) => {
   ) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((previous) => ({
+      ...previous,
       [name]: value,
     }));
   };
@@ -81,13 +85,11 @@ const EditDetailsDialog = ({ book }: Props) => {
 
     const totalCopies = Number(formData.totalCopies);
 
-    // Validate total copies
     if (!Number.isInteger(totalCopies) || totalCopies < 1) {
       toast.error("Total copies must be a positive whole number.");
       return;
     }
 
-    // Validate required fields
     if (
       !formData.title.trim() ||
       !formData.author.trim() ||
@@ -98,8 +100,8 @@ const EditDetailsDialog = ({ book }: Props) => {
       return;
     }
 
-    // Borrow functionality এখনো তৈরি হয়নি।
-    // তাই সব copies available থাকবে।
+    // Only update editable fields.
+    // Keep availableCopies unchanged.
     const updatedData = {
       title: formData.title.trim(),
       author: formData.author.trim(),
@@ -107,14 +109,13 @@ const EditDetailsDialog = ({ book }: Props) => {
       image: formData.image.trim(),
       description: formData.description.trim(),
       totalCopies,
-      availableCopies: totalCopies,
     };
 
     try {
       setIsUpdating(true);
 
       const response = await fetch(
-        `http://localhost:5000/all-books/${book._id}`,
+        `${API_URL}/all-books/${encodeURIComponent(book._id)}`,
         {
           method: "PATCH",
           headers: {
@@ -133,14 +134,16 @@ const EditDetailsDialog = ({ book }: Props) => {
       }
 
       if (result.matchedCount === 0) {
-        throw new Error("Book not found. Please refresh the page.");
+        throw new Error(
+          "Book not found. Please refresh the page."
+        );
       }
 
       toast.success("Book updated successfully!");
 
-      setOpen(false);
+      onUpdated?.(updatedData);
 
-      // Server থেকে updated book details load করবে
+      setOpen(false);
       router.refresh();
 
     } catch (error) {
@@ -156,25 +159,37 @@ const EditDetailsDialog = ({ book }: Props) => {
     }
   };
 
+  // Reset form when dialog opens
+  const handleOpenChange = (value: boolean) => {
+    if (isUpdating) return;
+
+    if (value) {
+      setFormData({
+        title: book.title,
+        author: book.author,
+        category: book.category,
+        image: book.image || "",
+        description: book.description || "",
+        totalCopies: String(book.totalCopies),
+      });
+    }
+
+    setOpen(value);
+  };
+
   return (
     <Dialog
       open={open}
-      onOpenChange={(value) => {
-        if (!isUpdating) {
-          setOpen(value);
-        }
-      }}
+      onOpenChange={handleOpenChange}
     >
-      {/* Edit Button */}
       <DialogTrigger
-  type="button"
-  className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-6 py-3.5 text-sm font-bold text-amber-800 transition hover:bg-amber-100"
->
-  <Pencil size={10} />
-  Edit Book Details
-</DialogTrigger>
+        type="button"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800 transition hover:bg-amber-100"
+      >
+        <Pencil size={16} />
+        Edit Book
+      </DialogTrigger>
 
-      {/* Edit Dialog */}
       <DialogContent className="max-h-[90vh] overflow-y-auto bg-[#faf9f6] sm:max-w-2xl">
 
         <DialogHeader>
@@ -191,7 +206,6 @@ const EditDetailsDialog = ({ book }: Props) => {
           onSubmit={handleSubmit}
           className="space-y-4 pt-3"
         >
-
           {/* Book Title */}
           <div>
             <label className="mb-2 block text-sm font-semibold text-gray-800">
@@ -292,14 +306,11 @@ const EditDetailsDialog = ({ book }: Props) => {
             />
 
             <p className="mt-2 text-xs text-gray-500">
-              Available Copies:{" "}
-              {Number(formData.totalCopies) > 0
-                ? Number(formData.totalCopies)
-                : 0}
+              Current Available Copies: {book.availableCopies ?? 0}
             </p>
 
             <p className="mt-1 text-xs text-gray-400">
-              All copies are currently available because borrowing has not been implemented yet.
+              Available copies will not be reset when editing book details.
             </p>
           </div>
 
@@ -324,9 +335,7 @@ const EditDetailsDialog = ({ book }: Props) => {
             </button>
 
           </div>
-
         </form>
-
       </DialogContent>
     </Dialog>
   );

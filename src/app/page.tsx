@@ -1,5 +1,6 @@
 import Banner from "@/components/Banner";
 import FeaturedAuthors from "@/components/FeaturedAuthors";
+import LatestBooks from "@/components/LatestBooks";
 import ReadingHabit from "@/components/ReadingHabit";
 import Testimonials from "@/components/Testimonials";
 import WhyChooseBookNook from "@/components/WhyChooseBookNook";
@@ -10,6 +11,9 @@ export default function Home() {
       <main>
       {/* Hero Section */}
       <Banner />
+
+       {/* Latest 6 Books */}
+      <LatestBooks />
 
       {/* All Books
 

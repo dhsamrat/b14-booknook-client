@@ -1,52 +1,3 @@
-// import {
-//   AlertDialog,
-//   AlertDialogAction,
-//   AlertDialogCancel,
-//   AlertDialogContent,
-//   AlertDialogDescription,
-//   AlertDialogFooter,
-//   AlertDialogHeader,
-//   AlertDialogTitle,
-//   AlertDialogTrigger,
-// } from "@/components/ui/alert-dialog"
-
-
-
-
-// import React from 'react';
-// import { Button } from "./ui/button";
-
-// const DeletDetailsDialo = () => {
-//     return (
-//         <div>
-//             <AlertDialog>
-//   <AlertDialogTrigger render={<Button variant="outline" />}>
-//     Show Dialog
-//   </AlertDialogTrigger>
-//   <AlertDialogContent>
-//     <AlertDialogHeader>
-//       <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-//       <AlertDialogDescription>
-//         This action cannot be undone. This will permanently delete your account
-//         from our servers.
-//       </AlertDialogDescription>
-//     </AlertDialogHeader>
-//     <AlertDialogFooter>
-//       <AlertDialogCancel>Cancel</AlertDialogCancel>
-//       <AlertDialogAction>Continue</AlertDialogAction>
-//     </AlertDialogFooter>
-//   </AlertDialogContent>
-// </AlertDialog>
-//         </div>
-//     );
-// };
-
-// export default DeletDetailsDialo;
-
-
-
-
-
 
 "use client";
 
@@ -65,7 +16,9 @@ const DeleteBookButton = ({
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Delete Book API
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
   const handleDelete = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this book?"
@@ -77,29 +30,31 @@ const DeleteBookButton = ({
       setIsDeleting(true);
 
       const res = await fetch(
-        `http://localhost:5000/all-book/${bookId}`,
+        `${API_URL}/all-books/${encodeURIComponent(bookId)}`,
         {
           method: "DELETE",
         }
       );
 
-      if (!res.ok) {
-        throw new Error("Failed to delete book");
-      }
-
       const data = await res.json();
 
-      if (data.deletedCount > 0) {
-        toast.success("Book deleted successfully!");
-
-        router.push("/all-books");
-        router.refresh();
-      } else {
-        toast.error("Book not found!");
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete book");
       }
+
+      toast.success("Book deleted successfully!");
+
+      router.push("/all-books");
+      router.refresh();
+
     } catch (error) {
       console.error("Delete Error:", error);
-      toast.error("Something went wrong!");
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong!"
+      );
     } finally {
       setIsDeleting(false);
     }

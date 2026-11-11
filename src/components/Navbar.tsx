@@ -306,7 +306,7 @@ export default function Navbar() {
             Home
           </Link>
 
-          <Link href="/books" className="text-gray-700 hover:text-blue-600">
+          <Link href="/all-books" className="text-gray-700 hover:text-blue-600">
             All Books
           </Link>
 
@@ -403,7 +403,7 @@ export default function Navbar() {
               Home
             </Link>
 
-            <Link href="/books" onClick={closeMenus} className={linkClass}>
+            <Link href="/all-books" onClick={closeMenus} className={linkClass}>
               All Books
             </Link>
 
