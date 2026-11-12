@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 import { authClient } from "@/lib/auth-client";
 import EditDetailsDialog from "@/components/EditDetailsDialog";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -56,10 +57,19 @@ export default function MyBooksPage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API_URL}/all-books`, {
-          method: "GET",
-          cache: "no-store",
-        });
+       const token = await getTokenFromClient();
+
+if (!token) {
+  throw new Error("Authentication token not found. Please login again.");
+}
+
+const response = await fetch(`${API_URL}/all-books`, {
+  method: "GET",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+  cache: "no-store",
+});
 
         if (!response.ok) {
           throw new Error("Failed to load your books.");
@@ -120,14 +130,22 @@ export default function MyBooksPage() {
     try {
       setDeletingId(id);
       setError("");
+const token = await getTokenFromClient();
 
-      const response = await fetch(
-        `${API_URL}/all-books/${encodeURIComponent(id)}`,
-        {
-          method: "DELETE",
-          cache: "no-store",
-        }
-      );
+if (!token) {
+  throw new Error("Authentication token not found. Please login again.");
+}
+
+const response = await fetch(
+  `${API_URL}/all-books/${encodeURIComponent(id)}`,
+  {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  }
+);
 
       const result = await response.json().catch(() => ({}));
 

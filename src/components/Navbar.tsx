@@ -265,6 +265,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
+import Image from "next/image";
 
 export default function Navbar() {
   const { data: session, isPending } = useSession();
@@ -334,13 +335,24 @@ export default function Navbar() {
           ) : session ? (
             <div className="relative">
               <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700 hover:bg-blue-200"
-                aria-label="Open profile menu"
-                aria-expanded={profileOpen}
-              >
-                {session.user.name?.charAt(0).toUpperCase() || "U"}
-              </button>
+  onClick={() => setProfileOpen(!profileOpen)}
+  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-blue-100 font-bold text-blue-700 hover:bg-blue-200"
+  aria-label="Open profile menu"
+  aria-expanded={profileOpen}
+>
+  {session.user.image ? (
+    <Image
+      src={session.user.image}
+      alt={session.user.name || "Profile"}
+      width={40}
+      height={40}
+      className="h-full w-full rounded-full object-cover"
+      unoptimized
+    />
+  ) : (
+    session.user.name?.charAt(0).toUpperCase() || "U"
+  )}
+</button>
 
               {profileOpen && (
                 <div className="absolute right-0 top-12 z-50 w-52 rounded-xl border bg-white p-2 shadow-lg">

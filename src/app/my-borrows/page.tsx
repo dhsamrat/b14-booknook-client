@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -32,14 +33,14 @@ export default function MyBorrowsPage() {
   const [returningId, setReturningId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  // Redirect user if not logged in
+  // Redirect if user is not logged in
   useEffect(() => {
     if (!isPending && !session) {
       router.replace("/login?callbackURL=/my-borrows");
     }
   }, [isPending, session, router]);
 
-  // Fetch borrowed books from backend
+  // Fetch borrowed books
   useEffect(() => {
     if (isPending) return;
 
@@ -55,21 +56,34 @@ export default function MyBorrowsPage() {
         setLoading(true);
         setError("");
 
+        const token = await getTokenFromClient();
+
+        if (!token) {
+          throw new Error(
+            "Authentication token not found. Please login again."
+          );
+        }
+
         const response = await fetch(
           `${API_URL}/my-borrows/${encodeURIComponent(
             session.user.email
           )}`,
           {
             method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             cache: "no-store",
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to load borrowed books.");
-        }
-
         const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.message || "Failed to load borrowed books."
+          );
+        }
 
         const records: Borrow[] = Array.isArray(result)
           ? result
@@ -116,10 +130,21 @@ export default function MyBorrowsPage() {
       setReturningId(borrowId);
       setError("");
 
+      const token = await getTokenFromClient();
+
+      if (!token) {
+        throw new Error(
+          "Authentication token not found. Please login again."
+        );
+      }
+
       const response = await fetch(
         `${API_URL}/my-borrows/${encodeURIComponent(borrowId)}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           cache: "no-store",
         }
       );
@@ -132,7 +157,6 @@ export default function MyBorrowsPage() {
         );
       }
 
-      // Remove the returned book from the current UI
       setBorrows((previous) =>
         previous.filter((borrow) => borrow._id !== borrowId)
       );

@@ -29,9 +29,11 @@ export default function AllBookPage() {
 
         const res = await fetch(
           "http://localhost:5000/all-books",
+           
           {
             cache: "no-store",
-          }
+          },
+           
         );
 
         if (!res.ok) {

@@ -30,7 +30,7 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 type BookCategory =
   | "Fiction"
   | "Science"
@@ -114,45 +114,55 @@ export default function AddBookPage() {
       },
     };
 
-    try {
-      setLoading(true);
+    
+try {
+  setLoading(true);
 
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  // Get JWT token from Better Auth
+  const token = await getTokenFromClient();
 
-      const res = await fetch(`${API_URL}/add-book`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookData),
-      });
+  if (!token) {
+    throw new Error("Authentication token not found. Please login again.");
+  }
 
-      const data = await res.json();
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to add book.");
-      }
+  const res = await fetch(`${API_URL}/add-book`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(bookData),
+  });
 
-      setSuccess("Book added successfully!");
+  const data = await res.json();
 
-      setFormData({
-        title: "",
-        author: "",
-        category: "Fiction",
-        image: "",
-        description: "",
-        totalCopies: "1",
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong."
-      );
-    } finally {
-      setLoading(false);
-    }
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to add book.");
+  }
+
+  setSuccess("Book added successfully!");
+
+  setFormData({
+    title: "",
+    author: "",
+    category: "Fiction",
+    image: "",
+    description: "",
+    totalCopies: "1",
+  });
+} catch (err) {
+  setError(
+    err instanceof Error
+      ? err.message
+      : "Something went wrong."
+  );
+} finally {
+  setLoading(false);
+}
+
   };
 
   return (

@@ -14,6 +14,8 @@ import {
   UserRound,
   Sparkles,
 } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 type Book = {
   _id: string;
@@ -43,29 +45,54 @@ const BookDetailsPage = async ({
   let book: Book | null = null;
   let error = "";
 
-  try {
-    const res = await fetch(
-      `http://localhost:5000/all-books/${id}`,
-      {
-        cache: "no-store",
-      }
-    );
 
-    if (!res.ok) {
-      throw new Error(
-        res.status === 404
-          ? "This book does not exist in our collection."
-          : "Unable to load book details."
-      );
-    }
+try {
+  const requestHeaders = await headers();
 
-    book = await res.json();
-  } catch (err) {
-    error =
-      err instanceof Error
-        ? err.message
-        : "Something went wrong.";
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  if (!session) {
+    throw new Error("Please login to view book details.");
   }
+
+  const tokenResponse = await auth.api.getToken({
+    headers: requestHeaders,
+  });
+
+  const token = tokenResponse?.token;
+
+  if (!token) {
+    throw new Error("Authentication token not found.");
+  }
+
+  const res = await fetch(
+    `http://localhost:5000/all-books/${id}`,
+    {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(
+      res.status === 404
+        ? "This book does not exist in our collection."
+        : "Unable to load book details."
+    );
+  }
+
+  book = await res.json();
+} catch (err) {
+  error =
+    err instanceof Error
+      ? err.message
+      : "Something went wrong.";
+}
+
 
   // Book Not Found
   if (!book || error) {

@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -40,26 +41,45 @@ export default function BorrowPage() {
   ].join("-");
 
   // Fetch book details
+ 
+  // Fetch book details with JWT
   useEffect(() => {
-    if (!id) return;
+    if (isPending || !session || !id) return;
 
     const fetchBook = async () => {
       try {
-        const response = await fetch(
-          `${API_URL}/all-books/${id}`,
-          { cache: "no-store" }
-        );
+        const token = await getTokenFromClient();
 
-        if (!response.ok) {
-          throw new Error("Failed to load book.");
+        if (!token) {
+          throw new Error(
+            "Authentication token not found. Please login again."
+          );
         }
 
+        const response = await fetch(
+          `${API_URL}/all-books/${id}`,
+          {
+            cache: "no-store",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.message || "Failed to load book."
+          );
+        }
 
         setBook(result.data ?? result);
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to load book.";
+          err instanceof Error
+            ? err.message
+            : "Failed to load book.";
 
         setError(message);
         toast.error(message);
@@ -69,7 +89,7 @@ export default function BorrowPage() {
     };
 
     fetchBook();
-  }, [id]);
+  }, [id, isPending, session]);
 
   // Login check
   useEffect(() => {
@@ -123,13 +143,22 @@ export default function BorrowPage() {
         returnDate,
       };
 
-      const response = await fetch(`${API_URL}/borrows`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(borrowData),
-      });
+    const token = await getTokenFromClient();
+
+if (!token) {
+  throw new Error(
+    "Authentication token not found. Please login again."
+  );
+}
+
+const response = await fetch(`${API_URL}/borrows`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify(borrowData),
+});
 
       const result = await response.json();
 

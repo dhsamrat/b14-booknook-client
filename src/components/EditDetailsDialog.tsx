@@ -20,6 +20,7 @@ import {
 
 import { Pencil } from "lucide-react";
 import { toast } from "react-toastify";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -114,16 +115,30 @@ const EditDetailsDialog = ({ book, onUpdated }: Props) => {
     try {
       setIsUpdating(true);
 
-      const response = await fetch(
-        `${API_URL}/all-books/${encodeURIComponent(book._id)}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedData),
-        }
-      );
+      const token = await getTokenFromClient();
+
+console.log("Edit Book JWT Debug:", {
+  tokenExists: !!token,
+  tokenLength: token?.length,
+});
+
+if (!token) {
+  throw new Error(
+    "Authentication token not found. Please login again."
+  );
+}
+
+const response = await fetch(
+  `${API_URL}/all-books/${encodeURIComponent(book._id)}`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedData),
+  }
+);
 
       const result = await response.json();
 
@@ -133,11 +148,11 @@ const EditDetailsDialog = ({ book, onUpdated }: Props) => {
         );
       }
 
-      if (result.matchedCount === 0) {
-        throw new Error(
-          "Book not found. Please refresh the page."
-        );
-      }
+  if (result.result?.matchedCount === 0) {
+  throw new Error(
+    "Book not found. Please refresh the page."
+  );
+}
 
       toast.success("Book updated successfully!");
 
