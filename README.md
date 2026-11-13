@@ -1,36 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 BookNook — A Small Online Library
 
-## Getting Started
+BookNook is a modern online library management application where readers can explore books, borrow their favorite books, manage their personal book collection, and return borrowed books.
 
-First, run the development server:
+The platform provides a simple and user-friendly experience for discovering and managing books.
+
+## 🌐 Live Website
+
+**Live Link:** https://b14-booknook-client.vercel.app
+
+**Frontend Repository:** https://github.com/dhsamrat/b14-booknook-client
+
+**Backend Repository:** https://github.com/dhsamrat/b14-booknook-server
+
+## ✨ Key Features
+
+- **User Authentication:** Secure registration and login using Better Auth with Google authentication support.
+- **Browse Books:** Explore the complete book collection with book details.
+- **Latest Books:** Discover the newest books added to the library.
+- **Add Books:** Authenticated users can add new books with title, author, category, image, and description.
+- **Manage My Books:** Users can view, edit, and delete books they have added.
+- **Borrow Books:** Logged-in users can borrow available books by selecting borrowing and return dates.
+- **My Borrowed Books:** View all borrowed books in one place.
+- **Return Books:** Return borrowed books and automatically update available copies.
+- **Book Availability:** Track total copies and available copies of each book.
+- **Responsive Design:** Optimized layouts for mobile, tablet, and desktop devices.
+
+## 🛠️ Technologies Used
+
+### Frontend
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Better Auth
+- Lucide React
+- React Toastify
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+- Better Auth JWT Plugin
+
+### Deployment
+- Vercel
+
+## 📂 Project Structure
+
+```text
+b14-booknook-client/
+├── public/
+├── src/
+│   ├── app/
+│   │   ├── all-books/
+│   │   ├── add-book/
+│   │   ├── login/
+│   │   ├── register/
+│   │   ├── profile/
+│   │   ├── my-books/
+│   │   ├── my-borrows/
+│   │   └── page.tsx
+│   ├── components/
+│   └── lib/
+├── .env.local
+├── package.json
+└── README.md
+```
+
+## ⚙️ Installation and Setup
+
+Follow these steps to run the project locally.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/dhsamrat/b14-booknook-client.git
+```
+
+### 2. Navigate to the Project Folder
+
+```bash
+cd b14-booknook-client
+```
+
+### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env.local` file in the root directory and add the following variables:
+
+```env
+NEXT_PUBLIC_API_URL=your_backend_api_url
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=your_better_auth_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+Replace the placeholder values with your actual configuration. Never commit secret keys or credentials to GitHub.
+
+### 5. Start the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and visit:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔐 Authentication
 
-## Learn More
+BookNook uses Better Auth for authentication.
 
-To learn more about Next.js, take a look at the following resources:
+- Email and password authentication.
+- Google OAuth authentication.
+- Protected routes for authenticated users.
+- JWT-based API authorization.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📖 Main Application Routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Description |
+|---|---|
+| `/` | Homepage |
+| `/all-books` | Browse all books |
+| `/all-books/[id]` | Book details |
+| `/add-book` | Add a new book |
+| `/my-books` | Manage added books |
+| `/my-borrows` | Manage borrowed books |
+| `/profile` | User profile |
+| `/login` | User login |
+| `/register` | User registration |
 
-## Deploy on Vercel
+## 👨‍💻 Developer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Delowar Hossain Samrat**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- GitHub: https://github.com/dhsamrat
+
+---
+
+⭐ If you find this project interesting, feel free to explore the repository and its features!
+
+**BookNook — Discover, Borrow, and Read.**
