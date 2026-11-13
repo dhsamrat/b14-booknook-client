@@ -68,7 +68,7 @@ try {
   }
 
   const res = await fetch(
-    `http://localhost:5000/all-books/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/all-books/${id}`,
     {
       cache: "no-store",
       headers: {

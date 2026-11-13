@@ -3,6 +3,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useSession, signOut } from "@/lib/auth-client";
 
 export default function ProfilePage() {
@@ -33,9 +34,21 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-[#faf9f6] px-4 py-16">
       <div className="mx-auto max-w-xl rounded-2xl border bg-white p-8 shadow-sm">
         <div className="text-center">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-4xl font-bold text-blue-700">
-            {session.user.name?.charAt(0).toUpperCase() || "U"}
-          </div>
+          {/* Profile Picture */}
+          {session.user.image ? (
+            <Image
+              src={session.user.image}
+              alt="Profile Picture"
+              width={100}
+              height={100}
+              unoptimized
+              className="mx-auto h-24 w-24 rounded-full object-cover"
+            />
+          ) : (
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-4xl font-bold text-blue-700">
+              {session.user.name?.charAt(0).toUpperCase() || "U"}
+            </div>
+          )}
 
           <h1 className="mt-5 text-2xl font-bold text-gray-900">
             My Profile

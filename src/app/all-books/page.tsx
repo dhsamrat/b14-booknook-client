@@ -28,7 +28,7 @@ export default function AllBookPage() {
         setError("");
 
         const res = await fetch(
-          "http://localhost:5000/all-books",
+          `${process.env.NEXT_PUBLIC_API_URL}/all-books`,
            
           {
             cache: "no-store",
